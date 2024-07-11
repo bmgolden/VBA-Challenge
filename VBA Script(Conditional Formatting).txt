@@ -1,0 +1,23 @@
+Sub ConditionalFormatting()
+Dim cell As Range
+Dim ws As Worksheet
+For Each ws In ThisWorkbook.Worksheets
+Dim i, lastrow As Long
+lastrow = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row
+For i = 2 To lastrow
+If ws.Cells(i, 10).Value > 0 Then
+ws.Cells(i, 10).Interior.ColorIndex = 4
+
+ElseIf ws.Cells(i, 10).Value < 0 Then
+ws.Cells(i, 10).Interior.ColorIndex = 3
+
+Else
+ws.Cells(i, 10).Interior.ColorIndex = 2
+
+
+End If
+Next i
+
+Next ws
+
+End Sub

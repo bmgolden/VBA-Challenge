@@ -1,0 +1,111 @@
+Sub VBAAssignment()
+    Dim ws As Worksheet
+    For Each ws In ThisWorkbook.Worksheets
+    
+    Dim i As Long
+    Dim resultrow As Integer
+    Dim summaryrow As Integer
+    Dim ticker As String
+    Dim lastrow As Long
+    Dim totalvolume As Double
+    Dim quarterlychange As Double
+    Dim quarteropen As Double
+    Dim quarterclose As Double
+    Dim percentchange As Double
+    Dim maxpercentincrease As Double
+    Dim maxpercentincreaseTicker As String
+    Dim maxpercentdecrease As Double
+    Dim maxpercentdecreaseticker As String
+    Dim greatesttotalvolume As Double
+    Dim greatesttotalvolumeticker As String
+    lastrow = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row
+    resultrow = 2
+    maxpercentincrease = 0
+    maxpercentdecrease = 0
+    greatesttotalvolume = 0
+    For i = 2 To lastrow
+        ' Check if the current ticker is different from the previous one by using the not equal operator
+        If ws.Cells(i, 1).Value <> ws.Cells(i - 1, 1).Value Or i = lastrow Then
+            ' Store the opening price for each one of the tickers in sequential order
+            quarteropen = ws.Cells(i, 3).Value
+        End If
+        
+        ' Check if the current ticker is different from the next one or if it's the last row of column one(the ticker column)
+        If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Or i = lastrow Then
+            ticker = ws.Cells(i, 1).Value
+            ' Store the closing price for each one of the tickers in sequential order
+            quarterclose = ws.Cells(i, 6).Value
+            
+            ' Calculate the quarterly change by subtracting the two stored values of the opening and closing stock price
+            quarterlychange = quarterclose - quarteropen
+            ' Calculate the percentage change over the quarter by using percent change formula
+            percentchange = (quarterclose - quarteropen) / quarteropen
+            
+             ' Calculate the total volume of the stock, just the summation of all of the volumes of the same ticker
+            totalvolume = ws.Cells(i, 7).Value + totalvolume
+            
+             ' Store the result in columns I, J, K, and L using the method tought in class
+            ws.Range("I" & resultrow).Value = ticker
+            ws.Range("J" & resultrow).Value = quarterlychange
+            ws.Range("K" & resultrow).Value = percentchange
+            ws.Range("L" & resultrow).Value = totalvolume
+            
+            'Format the percent change column
+            ws.Range("K" & resultrow).NumberFormat = "0.00%"
+            
+            ' Check and store the maximum percentage increase and associated stock ticker
+            If percentchange > maxpercentincrease Then
+                maxpercentincrease = percentchange
+                maxpercentincreaseTicker = ticker
+            End If
+             ' Check and store the maximum percentage decrease and associated stock ticker
+            If percentchange < maxpercentdecrease Then
+            maxpercentdecrease = percentchange
+            maxpercentdecreaseticker = ticker
+            End If
+            
+            ' Check and store the greatest total volume summation of all of the stocks and the associated ticker
+            If totalvolume > greatesttotalvolume Then
+            greatesttotalvolume = totalvolume
+            greatesttotalvolumeticker = ticker
+            End If
+            
+             resultrow = resultrow + 1
+            totalvolume = 0
+        Else
+            totalvolume = totalvolume + ws.Cells(i, 7).Value
+        End If
+    Next i
+    
+    ' Store and translate the greastest percent increase from the percent change column in the summary section
+    summaryrow = 2
+    ws.Range("N" & summaryrow).Value = "Greatest % Increase"
+    ws.Range("O" & summaryrow).Value = maxpercentincreaseTicker
+    ws.Range("P" & summaryrow).Value = maxpercentincrease
+    
+    'Format the answer
+    ws.Range("P" & summaryrow).NumberFormat = "0.00%"
+        
+    summaryrow = summaryrow + 1
+    
+    ' Store and translate the greatest percent decrease from the percent change column in the summary section
+    ws.Range("N" & summaryrow).Value = "Greatest % Decrease"
+    ws.Range("O" & summaryrow).Value = maxpercentdecreaseticker
+    ws.Range("P" & summaryrow).Value = maxpercentdecrease
+    
+    'Format the answer
+    ws.Range("P" & summaryrow).NumberFormat = "0.00%"
+    
+    summaryrow = summaryrow + 1
+    
+    ' Store and translate the greatest total volume of stock from the total volume column in the summary section
+    ws.Range("N" & summaryrow).Value = "Greatest Total Volume"
+    ws.Range("O" & summaryrow).Value = greatesttotalvolumeticker
+    ws.Range("P" & summaryrow).Value = greatesttotalvolume
+    
+    Next ws
+    
+    End Sub
+    
+    
+
